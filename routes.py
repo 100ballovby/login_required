@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, flash
 from flask_login import current_user, login_user, logout_user, login_required
-from app import app, login
-from forms import LoginForm
+from app import app, login, db
+from forms import LoginForm, RegistrationForm
 from models import User
 
 
@@ -37,6 +37,22 @@ def login():
         login_user(user, remember=form.rememberMe.data)
         return redirect(url_for('index'))
     return render_template('login.html', form=form)
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(username=form.username.data.lower(),
+                    email=form.email.data.lower(),
+                    phone=form.phone.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for('login'))
+    return render_template('register.html', form=form)
 
 
 @app.route('/logout')

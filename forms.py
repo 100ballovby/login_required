@@ -19,7 +19,6 @@ class RegistrationForm(FlaskForm):
     password_again = PasswordField('Password Again',
                                    validators=[DataRequired(),
                                                EqualTo('password')])
-    rememberMe = BooleanField('Remember Me')
     submit = SubmitField('Register')
 
     def validate_username(self, username):
