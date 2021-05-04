@@ -15,15 +15,21 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/secret')
+@login_required
+def secret():
+    return render_template('secret.html')
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     # если юзер вошел, не пускаем его на страницу логина
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         return redirect(url_for('index'))
 
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(username=form.username.data.lower()).first()
         if user is None or not user.check_password_hash(form.password.data):
             flash('Invalid username or password.')
             return redirect(url_for('login'))
